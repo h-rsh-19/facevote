@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vote Successful</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #e8f0fe;
+    }
+    .success-container {
+      margin-top: 10%;
+    }
+    .card {
+      padding: 30px;
+    }
+
+    /* 🌙 Dark Mode */
+    body.dark-mode {
+      background-color: #121212;
+      color: white;
+    }
+    body.dark-mode .card {
+      background-color: #1e1e1e;
+      color: white;
+    }
+    body.dark-mode .btn {
+      border-color: white;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 🌗 Dark Mode Toggle -->
+  <div class="container mt-3 text-end">
+    <button class="btn btn-outline-dark btn-sm" id="darkToggle" onclick="toggleDarkMode()">🌓 Toggle Dark Mode</button>
+  </div>
+
+  <div class="container success-container">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card shadow text-center">
+          <h2 class="text-success mb-3">✅ Vote Submitted Successfully!</h2>
+          <p>Thank you for participating in the election. Your vote has been securely recorded.</p>
+          <a href="/" class="btn btn-outline-primary mt-4">Return to Home</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🌙 Dark Mode Script -->
+  <script>
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark-mode");
+      const isDark = document.body.classList.contains("dark-mode");
+      localStorage.setItem("darkMode", isDark ? "enabled" : "disabled");
+      document.getElementById("darkToggle").innerText = isDark ? "☀️ Light Mode" : "🌓 Toggle Dark Mode";
+    }
+
+    window.onload = function () {
+      if (localStorage.getItem("darkMode") === "enabled") {
+        document.body.classList.add("dark-mode");
+        document.getElementById("darkToggle").innerText = "☀️ Light Mode";
+      }
+    };
+  </script>
+
+</body>
+</html>
