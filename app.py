@@ -1,16 +1,26 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 import sqlite3
 import os
-import numpy as np
-import face_recognition
-import cv2
 import pickle
 import base64
 from io import BytesIO
-from PIL import Image
+
+try:
+    import numpy as np
+    import face_recognition
+    from PIL import Image
+
+    CV_AVAILABLE = True
+    CV_IMPORT_ERROR = None
+except Exception as exc:  # pragma: no cover
+    np = None
+    face_recognition = None
+    Image = None
+    CV_AVAILABLE = False
+    CV_IMPORT_ERROR = exc
 
 app = Flask(__name__)
-app.secret_key = 'your-secret-key'
+app.secret_key = os.getenv("FACEVOTE_SECRET_KEY", "dev-secret-key")
 DB = 'database.db'
 
 # ======================= DB INIT =======================
@@ -41,6 +51,8 @@ def init_db():
 # ======================= UTILS =======================
 
 def decode_image(base64_data):
+    if not CV_AVAILABLE or Image is None or np is None:
+        raise RuntimeError("Face recognition dependencies are not installed.")
     image_data = base64.b64decode(base64_data.split(',')[1])
     image = Image.open(BytesIO(image_data)).convert('RGB')
     return np.array(image)
@@ -54,6 +66,10 @@ def index():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
+        if not CV_AVAILABLE:
+            flash(f"Face recognition dependencies are unavailable: {CV_IMPORT_ERROR}", "warning")
+            return redirect(url_for('register'))
+
         name = request.form['name']
         voter_id = request.form['voter_id']
         aadhaar = request.form['aadhaar']
@@ -100,6 +116,10 @@ def register():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
+        if not CV_AVAILABLE:
+            flash(f"Face recognition dependencies are unavailable: {CV_IMPORT_ERROR}", "warning")
+            return redirect(url_for('login'))
+
         voter_id = request.form['voter_id']
         image_data = request.form['image_data']
 
